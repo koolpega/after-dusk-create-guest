@@ -8,9 +8,6 @@ import string
 import hmac
 import hashlib
 
-from dotenv import load_dotenv
-load_dotenv()
-
 app = Flask(__name__)
 
 service_account_key = os.environ["FIREBASE_SERVICE_ACCOUNT_KEY"]
@@ -98,4 +95,5 @@ def create_uid():
     return jsonify(resp), 201
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=5000)
