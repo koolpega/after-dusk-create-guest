@@ -47,8 +47,6 @@ def create_uid():
         return jsonify({"error": "Content-Type must be application/x-www-form-urlencoded"}), 400
     if "gzip" not in accept_enc.lower():
         return jsonify({"error": "Accept-Encoding must include gzip"}), 400
-    if connection.lower() != "keep-alive":
-        return jsonify({"error": "Connection must be Keep-Alive"}), 400
 
     body_bytes = request.get_data(cache=True)
     expected_sig = hmac.new(hmac_key, body_bytes, hashlib.sha256).hexdigest()
@@ -97,3 +95,4 @@ def create_uid():
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=5000)
+
