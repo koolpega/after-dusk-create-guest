@@ -4,7 +4,6 @@ from firebase_admin import credentials, db
 import os, json, re
 from datetime import datetime, timezone
 import secrets
-import string
 import hmac
 import hashlib
 import time
@@ -26,10 +25,6 @@ firebase_admin.initialize_app(cred, {
 })
 
 hmac_key = bytes.fromhex(os.environ["HMAC_KEY"])
-
-def generate_default_password(length=64):
-    alphabet = string.ascii_uppercase + string.digits
-    return "".join(secrets.choice(alphabet) for _ in range(length))
 
 def get_next_uid(transaction):
     if transaction is None:
@@ -81,12 +76,6 @@ def create_uid():
     source = request.form.get("source")
     app_id = request.form.get("app_id")
 
-    if not password:
-        password = generate_default_password()
-        custom_password = False
-    else:
-        custom_password = True
-
     if not isinstance(password, str) or not re.compile(r"^[A-Za-z0-9_]+$").fullmatch(password):
         return jsonify({"error": "Password may contain A-Z, a-z, 0-9, and _ only."}), 400
 
@@ -103,13 +92,10 @@ def create_uid():
         "source": source,
         "app_id": app_id,
         "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "custom_password": custom_password,
         "user_agent": ua
     })
 
     resp = {"uid": next_uid}
-    if custom_password:
-        resp["password"] = password
 
     return jsonify(resp), 201
 
